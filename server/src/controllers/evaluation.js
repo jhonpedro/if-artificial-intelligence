@@ -16,16 +16,7 @@ const upload = multer({
 const evaluationRoutes = Router()
 
 evaluationRoutes.post('/evaluate', upload.single('image'), async (req, res) => {
-	const predictionRaw = await getPredictions(req.file.path)
-
-	const predictionFormated = predictionRaw.map((evaluationResult) => {
-		const [car, probability] = evaluationResult
-			.replace(/ /g, '')
-			.replace(/_/g, ' ')
-			.split(':')
-
-		return { car, probability: +probability }
-	})
+	const predictionFormated = await getPredictions(req.file.path)
 
 	res.json(predictionFormated)
 })

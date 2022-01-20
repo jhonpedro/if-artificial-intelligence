@@ -10,9 +10,18 @@ module.exports = getPredictions = async (filename) =>
 			path.resolve(__dirname, 'imageRecognition.py'),
 			{ args: [filename] },
 			(err, results) => {
-				if (err) rejects(err)
+				if (err || !results) rejects(err)
 
-				resolve(results)
+				resolve(
+					results?.map((evaluationResult) => {
+						const [car, probability] = evaluationResult
+							.replace(/ /g, '')
+							.replace(/_/g, ' ')
+							.split(':')
+
+						return { car, probability: +probability }
+					}) || []
+				)
 			}
 		)
 	})
